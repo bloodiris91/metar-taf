@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+	<ModulePrefs title="METAR &amp; TAF" description="Read METAR and TAF reports from ADDS. METAR and TAF are weather observations and forecasts for airports." author="Nicolas Herrbach" author_email="projects.of.nicolas.herrbach@gmail.com" screenshot="http://metar-taf.googlecode.com/files/screenshot.png" thumbnail="http://metar-taf.googlecode.com/files/thumbnail.png" width="361" height="200">
+		<Require feature="dynamic-height" />
+		<Require feature="minimessage" />
+	</ModulePrefs>
+	<UserPref name="icao" display_name="ICAO station identifier" datatype="string" />
+	<Content type="html" view="home,canvas">
+		<![CDATA[
+			<style type="text/css">
+				p#metarp , p#tafp
+				{
+					font-size : 0.6em ;
+				}
+				p#tafp
+				{
+					margin-left : 2.4em ;
+					text-indent : -2.4em ;
+				}
+				span#refreshspan
+				{
+					font-size : 0.8em ;
+				}
+			</style>
+			<div id="container">
+				<p id="metarp"></p>
+				<p id="tafp"></p>
+				<span id="refreshspan"></span>
+			</div>
+			<script type="text/javascript">
+				var msg = new _IG_MiniMessage(__MODULE_ID__);
+				function fetch()
+				{
+					var prefs = new _IG_Prefs(__MODULE_ID__);
+					var icao = prefs.getString("icao");
+					if(icao == "")
+					{
+						msg.createDismissibleMessage("No station selected. Please click edit and set the four letters ICAO station identifier.");
+						return;
+					}
+					document.getElementById("refreshspan").innerHTML = "<a href='javascript:refresh();' title='Refresh information'>Refresh</a>";
+					var metarurl = "http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc=" + icao;
+					var tafurl = "http://weather.noaa.gov/cgi-bin/mgettaf.pl?cccc=" + icao;
+					_IG_FetchContent(metarurl, metarcallback, { refreshInterval: 1 });
+					_IG_FetchContent(tafurl, tafcallback, { refreshInterval: 1 });
+				}
+				function metarcallback(response)
+				{
+					var firstpos = response.indexOf("The observation is:");
+					if(firstpos == -1)
+					{
+						msg.createDismissibleMessage("No METAR for the selected station.");
+						return;
+					}
+					var startpos = response.indexOf("<font", firstpos) + 33;
+					var endpos = response.indexOf("</font>", startpos) - 1;
+					var metardata = response.substring(startpos, endpos);
+					document.getElementById("metarp").innerHTML = metardata;
+					_IG_AdjustIFrameHeight();
+				}
+				function tafcallback(response)
+				{
+					var firstpos = response.indexOf("The observation is:");
+					if(firstpos == -1)
+					{
+						msg.createDismissibleMessage("No TAF for the selected station.");
+						return;
+					}
+					var startpos = response.indexOf("<pre>") + 5;
+					var endpos = response.indexOf("</pre>") - 1;
+					var tafdata = response.substring(startpos, endpos);
+					var find = new RegExp(String.fromCharCode(10), "g");
+					tafdata = tafdata.replace(find, "<br />");
+					document.getElementById("tafp").innerHTML = tafdata;
+					_IG_AdjustIFrameHeight();
+				}
+				function refresh()
+				{
+					fetch();
+				}
+				_IG_RegisterOnloadHandler(fetch);
+			</script>
+		]]>
+	</Content>
+</Module>
