@@ -25,7 +25,7 @@
 			<div id="container">
 				<p id="metarp"></p>
 				<p id="tafp"></p>
-				<span id="refreshspan"></span>
+				<span id="refreshspan"><a href="javascript:refresh();" title="Refresh METAR and TAF information manually">Refresh</a></span>
 			</div>
 			<script type="text/javascript">
 				var msg = new _IG_MiniMessage(__MODULE_ID__);
@@ -38,7 +38,6 @@
 						msg.createDismissibleMessage("No station selected. Please click edit and set the four letters ICAO station identifier.");
 						return;
 					}
-					document.getElementById("refreshspan").innerHTML = "<a href='javascript:refresh();' title='Refresh information'>Refresh</a>";
 					var metarurl = "http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc=" + icao;
 					var tafurl = "http://weather.noaa.gov/cgi-bin/mgettaf.pl?cccc=" + icao;
 					_IG_FetchContent(metarurl, metarcallback, { refreshInterval: 1 });
@@ -49,7 +48,7 @@
 					var firstpos = response.indexOf("The observation is:");
 					if(firstpos == -1)
 					{
-						msg.createDismissibleMessage("No METAR for the selected station.");
+						msg.createDismissibleMessage("No METAR report for the selected station or server temporarily unavailable.");
 						return;
 					}
 					var startpos = response.indexOf("<font", firstpos) + 33;
@@ -63,7 +62,7 @@
 					var firstpos = response.indexOf("The observation is:");
 					if(firstpos == -1)
 					{
-						msg.createDismissibleMessage("No TAF for the selected station.");
+						msg.createDismissibleMessage("No TAF report for the selected station or server temporarily unavailable.");
 						return;
 					}
 					var startpos = response.indexOf("<pre>") + 5;
