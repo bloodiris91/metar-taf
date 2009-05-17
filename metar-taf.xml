@@ -48,7 +48,7 @@
 					var firstpos = response.indexOf("The observation is:");
 					if(firstpos == -1)
 					{
-						msg.createDismissibleMessage("No METAR report for the selected station or server temporarily unavailable.");
+						msg.createDismissibleMessage("No METAR report for the selected station or information temporarily unavailable.");
 						return;
 					}
 					var startpos = response.indexOf("<font", firstpos) + 33;
@@ -62,7 +62,7 @@
 					var firstpos = response.indexOf("The observation is:");
 					if(firstpos == -1)
 					{
-						msg.createDismissibleMessage("No TAF report for the selected station or server temporarily unavailable.");
+						msg.createDismissibleMessage("No TAF report for the selected station or information temporarily unavailable.");
 						return;
 					}
 					var startpos = response.indexOf("<pre>") + 5;
