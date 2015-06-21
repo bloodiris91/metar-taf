@@ -1,0 +1,1 @@
+A simple Google gadget to get the METAR weather observations and the TAF weather forecast for airports.
